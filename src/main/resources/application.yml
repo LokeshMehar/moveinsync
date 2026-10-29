@@ -1,0 +1,68 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: trip-job-scheduler
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/scheduler?reWriteBatchedInserts=true}
+    username: ${DB_USER:scheduler}
+    password: ${DB_PASSWORD:scheduler}
+    hikari:
+      maximum-pool-size: ${DB_POOL:30}
+      minimum-idle: 5
+      connection-timeout: 5000
+  flyway:
+    enabled: true
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  threads:
+    virtual:
+      enabled: true
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: trip-job-scheduler
+
+scheduler:
+  node-id: ${NODE_ID:}
+  partitions: ${PARTITIONS:64}
+  lease: ${LEASE:15s}
+  node-ttl: ${NODE_TTL:6s}
+  poll: ${POLL:100ms}
+  claim-batch: ${CLAIM_BATCH:100}
+  worker-capacity: ${WORKER_CAPACITY:256}
+  materialize-horizon: 30s
+  misfire-grace: 60s
+  max-catch-up: 1000
+  retry-base: ${RETRY_BASE:1s}
+  retry-max: ${RETRY_MAX:5m}
+  bench-enabled: ${BENCH_ENABLED:false}
+
+# DEMO CREDENTIALS - local use only. With SPRING_PROFILES_ACTIVE=prod nothing below is seeded and the app refuses
+# to start on the default JWT secret, so JWT_SECRET must be set and users provisioned some other way.
+security:
+  jwt-secret: ${JWT_SECRET:dev-only-secret-change-me-dev-only-secret-change-me}
+  jwt-ttl: 8h
+  seed-tenants:
+    - { id: acme, name: Acme Corp, time-zone: Asia/Kolkata, max-concurrency: 100 }
+    - { id: globex, name: Globex Inc, time-zone: America/New_York, max-concurrency: 100 }
+  seed-users:
+    - { username: operator, password: operator-pass, role: OPERATOR }
+    - { username: acme-admin, password: admin-pass, role: ADMIN, tenant: acme }
+    - { username: acme-emp, password: emp-pass, role: EMPLOYEE, tenant: acme }
+    - { username: globex-admin, password: admin-pass, role: ADMIN, tenant: globex }

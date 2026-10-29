@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- Structured JSON logs. MDC carries node / tenant / runId / job. Payloads and personal data are never logged. -->
+  <springProfile name="!plain">
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        <includeMdcKeyName>node</includeMdcKeyName>
+        <includeMdcKeyName>tenant</includeMdcKeyName>
+        <includeMdcKeyName>runId</includeMdcKeyName>
+        <includeMdcKeyName>job</includeMdcKeyName>
+        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+          <maxDepthPerThrowable>20</maxDepthPerThrowable>
+        </throwableConverter>
+      </encoder>
+    </appender>
+    <root level="INFO"><appender-ref ref="JSON"/></root>
+  </springProfile>
+  <springProfile name="plain">
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+  </springProfile>
+</configuration>
