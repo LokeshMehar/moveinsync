@@ -1,0 +1,55 @@
+# One command:  docker compose up --build
+# Ports are bound to localhost only: the demo database password and JWT secret are public defaults.
+# Postgres + a 3-node scheduler cluster (ports 8081-8083). Any node serves the API; all three fire jobs.
+x-node: &node
+  build: .
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+  environment: &node-env
+    DB_URL: jdbc:postgresql://postgres:5432/scheduler?reWriteBatchedInserts=true
+    DB_USER: scheduler
+    DB_PASSWORD: scheduler
+    BENCH_ENABLED: "true"
+    LEASE: ${LEASE:-15s}
+    NODE_TTL: ${NODE_TTL:-6s}
+    JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-dev-only-secret-change-me}
+  mem_limit: 768m
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scheduler
+      POSTGRES_USER: scheduler
+      POSTGRES_PASSWORD: scheduler
+    command: ["postgres", "-c", "max_connections=200", "-c", "shared_buffers=256MB", "-c", "synchronous_commit=on"]
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scheduler -d scheduler"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  node1:
+    <<: *node
+    container_name: sched-node1
+    environment: { <<: *node-env, NODE_ID: node1 }
+    ports: ["127.0.0.1:8081:8080"]
+
+  node2:
+    <<: *node
+    container_name: sched-node2
+    environment: { <<: *node-env, NODE_ID: node2 }
+    ports: ["127.0.0.1:8082:8080"]
+
+  node3:
+    <<: *node
+    container_name: sched-node3
+    environment: { <<: *node-env, NODE_ID: node3 }
+    ports: ["127.0.0.1:8083:8080"]
+
+volumes:
+  pgdata:
