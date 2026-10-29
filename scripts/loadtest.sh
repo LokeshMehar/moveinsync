@@ -27,4 +27,5 @@ REPORT=$(api GET "/api/bench/report?batch=$BATCH")
 echo "$REPORT"
 mkdir -p bench-results && echo "$REPORT" > "bench-results/load-$BATCH.json"
 P99=$(echo "$REPORT" | sed -n 's/.*"lag_p99_ms":\([0-9.]*\).*/\1/p')
+[[ -n "$P99" ]] || fail "no report returned (is BENCH_ENABLED=true?)"
 awk -v p="$P99" 'BEGIN { exit !(p < 2000) }' && pass "p99 fire lag ${P99} ms < 2000 ms" || fail "p99 fire lag ${P99} ms >= 2000 ms"

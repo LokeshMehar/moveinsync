@@ -86,7 +86,7 @@ public class BenchService {
                       FROM job_run WHERE payload->>'bench' = ?) r
                 """, batch));
         out.put("effects", jdbc.queryForObject("SELECT count(*) FROM effect e JOIN job_run r ON r.id = e.run_id WHERE r.payload->>'bench' = ?", Long.class, batch));
-        out.put("duplicateEffects", jdbc.queryForObject("SELECT count(*) - count(DISTINCT idempotency_key) FROM effect e JOIN job_run r ON r.id = e.run_id WHERE r.payload->>'bench' = ?", Long.class, batch));
+        out.put("duplicateEffects", jdbc.queryForObject("SELECT count(*) - count(DISTINCT e.idempotency_key) FROM effect e JOIN job_run r ON r.id = e.run_id WHERE r.payload->>'bench' = ?", Long.class, batch));
         Map<String, Long> perNode = new LinkedHashMap<>();
         jdbc.query("SELECT lease_owner, count(*) n FROM job_run WHERE payload->>'bench' = ? GROUP BY lease_owner ORDER BY 1",
                 rs -> {
