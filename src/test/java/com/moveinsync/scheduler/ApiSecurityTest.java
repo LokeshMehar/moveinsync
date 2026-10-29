@@ -27,6 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability
+// The application context starts a real scheduler node; close it afterwards so it cannot compete with the
+// in-JVM nodes of the other test classes for partitions and runs.
+@org.springframework.test.annotation.DirtiesContext(classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 class ApiSecurityTest extends PgTestBase {
 
     @DynamicPropertySource
