@@ -1,3 +1,7 @@
+Lokesh Mehar
+MovInSync
+
+
 # Trip job scheduler
 
 Case Study 3 from the MoveInSync 2026 backend assessment: a scheduler for timed trip jobs (nightly rosters, pickup
@@ -121,3 +125,7 @@ handlers/  JobHandler -> SimulatedWorkHandler -> the five job types
 service/   JobService, OpsService, BenchService
 api/       controllers and the error handler       security/  JWT, Caller (tenant scoping), seed data
 ```
+
+## Demo Video
+[Watch the demo](PASTE_YOUR_LINK_HERE)
+
