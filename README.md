@@ -1,6 +1,6 @@
 Lokesh Mehar
-MovInSync
-
+MoveInSync
+imt_2022066@iiitm.ac.in
 
 # Trip job scheduler
 
@@ -10,6 +10,10 @@ Java 21, Spring Boot 3.3, PostgreSQL 16. Nothing else to install besides Docker.
 
 The goal: no job is lost, no effect happens twice, a node that freezes past its lease can't write anything, and one
 tenant's burst doesn't hold up another tenant. `docs/DESIGN.md` explains how, with diagrams and a failure table.
+
+
+## Demo Video
+[Watch the demo](https://drive.google.com/file/d/1O_leQqTW-ubp9pazQvvxtKH83ZDWpmAk/view?usp=sharing)
 
 ## Run it
 
@@ -126,6 +130,5 @@ service/   JobService, OpsService, BenchService
 api/       controllers and the error handler       security/  JWT, Caller (tenant scoping), seed data
 ```
 
-## Demo Video
-[Watch the demo](PASTE_YOUR_LINK_HERE)
+
 
